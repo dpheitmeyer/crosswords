@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- width=device-width makes the page scale correctly on phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crossword Solutions</title>
+  <style>
+    /* Color tokens: light by default, swapped automatically in dark mode */
+    :root {
+      --bg: #f7f7f5;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --muted: #5c5c5c;
+      --border: #c8c8c8;
+      --accent: #1f5fbf;
+      --accent-text: #ffffff;
+      --error: #b3261e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --card: #1e1e1e;
+        --text: #f0f0f0;
+        --muted: #a8a8a8;
+        --border: #444444;
+        --accent: #6ea8ff;
+        --accent-text: #0b1a33;
+        --error: #ff8a80;
+      }
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+
+    main {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 1.6rem;
+    }
+
+    p.hint {
+      margin: 0 0 20px;
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    /* 16px+ font on inputs prevents iOS from zooming in on focus */
+    input {
+      width: 100%;
+      font-size: 1.5rem;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    button {
+      width: 100%;
+      margin-top: 16px;
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: var(--accent-text);
+      cursor: pointer;
+    }
+    button:active { opacity: 0.85; }
+
+    .error {
+      min-height: 1.5em; /* reserves space so the layout doesn't jump */
+      margin: 8px 0 0;
+      color: var(--error);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Crossword Solutions</h1>
+    <p class="hint">Enter a puzzle number to open its solution on onlinecrosswords.net.</p>
+
+    <form id="solution-form" novalidate>
+      <label for="puzzle-number">Puzzle number</label>
+      <!--
+        inputmode="numeric" shows the number keypad on phones.
+        We use type="text" rather than type="number" because number inputs
+        allow "e", "+", "-", and decimals, and add spinner arrows.
+      -->
+      <input
+        id="puzzle-number"
+        name="puzzle-number"
+        type="text"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        autocomplete="off"
+        placeholder="e.g. 7045"
+        autofocus
+        required
+      >
+      <p id="error" class="error" role="alert"></p>
+      <button type="submit">Show solution</button>
+    </form>
+  </main>
+
+  <script>
+    const BASE_URL = "https://onlinecrosswords.net/solutions/";
+
+    const form = document.getElementById("solution-form");
+    const input = document.getElementById("puzzle-number");
+    const error = document.getElementById("error");
+
+    form.addEventListener("submit", (event) => {
+      // Stop the browser's default form submission; we redirect ourselves.
+      event.preventDefault();
+
+      const value = input.value.trim();
+
+      // Solution numbers are always whole numbers (digits only).
+      if (!/^\d+$/.test(value)) {
+        error.textContent = "Please enter digits only, like 7045.";
+        input.focus();
+        return;
+      }
+
+      error.textContent = "";
+      window.location.href = BASE_URL + value;
+    });
+
+    // Clear the error message as soon as the user starts fixing their input.
+    input.addEventListener("input", () => {
+      error.textContent = "";
+    });
+  </script>
+</body>
+</html>
