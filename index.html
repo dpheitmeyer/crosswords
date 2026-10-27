@@ -38,7 +38,7 @@
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 48px 16px;
+      padding: 16px 16px;
       background: var(--bg);
       color: var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -61,7 +61,7 @@
     }
 
     p.hint {
-      margin: 0 0 20px;
+      margin: 0 0 0.5rem;
       color: var(--muted);
     }
 
@@ -100,11 +100,14 @@
     }
     button:active { opacity: 0.85; }
 
-    .error {
+    .error.show {
       min-height: 1.5em; /* reserves space so the layout doesn't jump */
       margin: 8px 0 0;
       color: var(--error);
       font-weight: 600;
+    }
+    .error.show {
+       min-height: 0;
     }
   </style>
 </head>
@@ -152,11 +155,13 @@
       // Solution numbers are always whole numbers (digits only).
       if (!/^\d+$/.test(value)) {
         error.textContent = "Please enter digits only, like 7045.";
+        error.classList.add('show');
         input.focus();
         return;
       }
 
       error.textContent = "";
+      error.classList.remove('show');
       window.location.href = BASE_URL + value;
     });
 
